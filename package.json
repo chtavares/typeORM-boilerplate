@@ -1,0 +1,102 @@
+{
+  "name": "api-boilerplate",
+  "version": "1.0.0",
+  "description": "Node API Boilerplate by Nave (nave.rs).",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/naveteam/back-boilerplate.git"
+  },
+  "engines": {
+    "node": ">=10.14.0"
+  },
+  "scripts": {
+    "dev": "nodemon src/index.js --exec babel-node --inspect src/index.js",
+    "start": "babel-node build/index.js",
+    "build": "rm -rf build && mkdir build && babel src -s -d build",
+    "pm2": "pm2 start build/index.js -i ${PM2_WORKERS-2} --max-memory-restart ${PM2_MAX_MEM-256M} --env production",
+    "jest": "jest --detectOpenHandles --runInBand --forceExit",
+    "pretest": "yarn eslint",
+    "test": "yarn jest",
+    "knex": "babel-node node_modules/.bin/knex --knexfile src/database/knexfile.js",
+    "knex-build": "babel-node node_modules/.bin/knex --knexfile build/database/knexfile.js",
+    "db:migrate-build": "yarn knex-build migrate:latest",
+    "db:seed-build": "yarn knex-build seed:run",
+    "db:rollback-build": "yarn knex-build migrate:rollback",
+    "db:migrate": "yarn knex migrate:latest",
+    "db:seed": "yarn knex seed:run",
+    "db:rollback": "yarn knex migrate:rollback",
+    "eslint": "eslint --ignore-path .gitignore .",
+    "prettier": "prettier --write *.js src/*.js src/**/*.js src/**/**/*.js test/*.js test/**/*.js",
+    "commit": "git-cz"
+  },
+  "author": "naveteam",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/joi": "^16.1.4",
+    "@koa/cors": "^2.2.2",
+    "aws-sdk": "^2.491.0",
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^10.0.2",
+    "babel-plugin-module-resolver": "^3.2.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "bcryptjs": "^2.4.3",
+    "bookshelf": "^1.0.1",
+    "bookshelf-upsert": "^0.2.0",
+    "bookshelf-uuid": "^1.0.0",
+    "dotenv": "^6.1.0",
+    "file-type": "^14.1.4",
+    "firebase": "^6.2.4",
+    "googleapis": "^47.0.0",
+    "jsonwebtoken": "^8.3.0",
+    "knex": "^0.19.5",
+    "koa": "^2.5.3",
+    "koa-body": "^4.0.4",
+    "koa-helmet": "^5.2.0",
+    "koa-jwt": "^3.5.1",
+    "koa-logger": "^3.2.0",
+    "koa-router": "^7.4.0",
+    "koa-unless": "celsomarques/koa-unless#koa-v2",
+    "nodemailer": "^6.4.2",
+    "pg": "^7.4.3",
+    "sqlite3": "^4.1.0",
+    "uuid": "^3.3.2",
+    "xhr2": "^0.2.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
+    "babel-polyfill": "^6.26.0",
+    "commitlint": "^8.2.0",
+    "cz-conventional-changelog": "^3.0.2",
+    "eslint": "^6.4.0",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "husky": "^3.0.0",
+    "jest": "^23.6.0",
+    "lint-staged": "9.5.0",
+    "nodemon": "^1.18.7",
+    "prettier": "^1.18.2",
+    "supertest": "^3.3.0"
+  },
+  "lint-staged": {
+    "*.{js, jsx}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "resolutions": {
+    "koa-jwt/koa-unless": "celsomarques/koa-unless#koa-v2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
