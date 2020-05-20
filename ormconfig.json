@@ -1,0 +1,18 @@
+{
+  "name": "default",
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5432,
+  "username": "postgres",
+  "password": "",
+  "database": "boilerplate_db",
+  "synchronize": true,
+  "entities": ["dist/entity/*.js"],
+  "subscribers": ["dist/subscriber/*.js"],
+  "migrations": ["dist/migration/*.js"],
+  "cli": {
+    "entitiesDir": "src/entity",
+    "migrationsDir": "src/migration",
+    "subscribersDir": "src/subscriber"
+  }
+}
