@@ -1,4 +1,4 @@
-import { UserEntity } from 'entity/User'
+import { User } from 'entity/User'
 import { getConnection } from 'typeorm'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
@@ -13,7 +13,7 @@ import { templateForgetPassword } from '../utils/reset-password-template'
 export const login = async ctx => {
   const { body } = ctx.request
   const user = await getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .findOneOrFail({ email: body.email })
     .catch(() => {
       throw Unauthorized('Unauthorized, User not found')
@@ -39,14 +39,14 @@ export const forget = async ctx => {
   const token = crypto.randomBytes(10).toString('hex')
 
   const user = await getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .findOneOrFail({ email })
 
   await getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .merge(user, { passwordResetToken: token })
   await getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .save(user)
 
   const template = templateForgetPassword(token)
@@ -61,14 +61,14 @@ export const reset = async ctx => {
   const newPassword = await encryptPassword(password)
 
   const user = await getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .findOneOrFail({ passwordResetToken: token })
 
   await getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .merge(user, { passwordResetToken: null, password: newPassword })
   await getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .save(user)
 
   return user
@@ -76,20 +76,20 @@ export const reset = async ctx => {
 
 export const index = () =>
   getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .createQueryBuilder()
     .getMany()
 
 export const show = ctx =>
   getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .findOneOrFail(ctx.params.id)
 
 export const create = async ctx => {
   const { body } = ctx.request
 
   return getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .save({ ...body, password: await encryptPassword(body.password) })
 }
 
@@ -97,14 +97,14 @@ export const update = async ctx => {
   const { body } = ctx.request
 
   const user = await getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .findOneOrFail({ id: ctx.params.id })
 
   await getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .merge(user, body)
   await getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .save(user)
 
   return user
@@ -112,7 +112,7 @@ export const update = async ctx => {
 
 export const destroy = ctx => {
   getConnection()
-    .getRepository(UserEntity)
+    .getRepository(User)
     .softDelete(ctx.params.id)
   const isAffected = isDeleted.raw.affectedRows > 0
 
