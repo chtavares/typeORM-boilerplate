@@ -7,16 +7,16 @@ import {
   OneToOne,
   UpdateDateColumn
 } from 'typeorm'
-import { UserEntity } from './User'
+import { User } from './User'
 
 @Entity({ name: 'roles', orderBy: { createdAt: 'DESC' } })
-export class RoleEntity {
+export class Role {
   @PrimaryGeneratedColumn('uuid')
   id = ''
 
   @Column({ type: 'text', nullable: false })
   name = ''
 
-  @OneToOne(() => UserEntity)
+  @OneToOne(() => User)
   user = undefined
 }

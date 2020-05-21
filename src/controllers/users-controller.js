@@ -1,115 +1,123 @@
-// import User from 'models/User'
+import { UserEntity } from 'entity/User'
+import { getConnection } from 'typeorm'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import {
   Unauthorized,
   encryptPassword,
   generateJWTToken,
-  sendEmail,
-  NotFound
+  sendEmail
 } from '../helpers'
 import { templateForgetPassword } from '../utils/reset-password-template'
 
 export const login = async ctx => {
   const { body } = ctx.request
+  const user = await getConnection()
+    .getRepository(UserEntity)
+    .findOneOrFail({ email: body.email })
+    .catch(() => {
+      throw Unauthorized('Unauthorized, User not found')
+    })
 
-  // const user = await new User({ email: body.email }).fetch().catch(() => {
-  //   throw Unauthorized('Unauthorized, User not found')
-  // })
+  const isValid = await bcrypt.compare(body.password, user.password)
 
-  // const isValid = await bcrypt.compare(body.password, user.attributes.password)
+  if (!isValid) {
+    throw Unauthorized('Unauthorized, password is invalid')
+  }
 
-  // if (!isValid) {
-  //   throw Unauthorized('Unauthorized, password is invalid')
-  // }
-
-  // const parsedUser = user.toJSON()
-
-  // return {
-  //   ...parsedUser,
-  //   token: generateJWTToken({ id: parsedUser.id, role: parsedUser.role })
-  // }
-
-  return 'ok'
+  return {
+    user,
+    token: generateJWTToken({ id: user.id, role: user.roleId })
+  }
 }
 
 export const forget = async ctx => {
-  // const { body } = ctx.request
-  // const token = crypto.randomBytes(10).toString('hex')
+  const {
+    body: { email }
+  } = ctx.request
 
-  // await new User()
-  //   .where({ email: body.email })
-  //   .save(
-  //     {
-  //       password_reset_token: token
-  //     },
-  //     { method: 'update' }
-  //   )
-  //   .catch(err => {
-  //     throw new NotFound('User not found')
-  //   })
+  const token = crypto.randomBytes(10).toString('hex')
 
-  // const template = templateForgetPassword(token)
+  const user = await getConnection()
+    .getRepository(UserEntity)
+    .findOneOrFail({ email })
 
-  // await sendEmail(body.email, template)
+  await getConnection()
+    .getRepository(UserEntity)
+    .merge(user, { passwordResetToken: token })
+  await getConnection()
+    .getRepository(UserEntity)
+    .save(user)
 
-  return { email: 'test@hotmial.com' }
+  const template = templateForgetPassword(token)
+
+  await sendEmail(body.email, template)
+
+  return { user }
 }
 
 export const reset = async ctx => {
-  // const { token, password } = ctx.request.body
+  const { token, password } = ctx.request.body
+  const newPassword = await encryptPassword(password)
 
-  // const newPassword = await encryptPassword(password)
+  const user = await getConnection()
+    .getRepository(UserEntity)
+    .findOneOrFail({ passwordResetToken: token })
 
-  // return new User()
-  //   .where({ password_reset_token: token })
-  //   .save(
-  //     {
-  //       password: newPassword,
-  //       password_reset_token: null
-  //     },
-  //     { method: 'update' }
-  //   )
-  //   .catch(err => {
-  //     throw new NotFound('User not found')
-  //   })
-  return 'o'
+  await getConnection()
+    .getRepository(UserEntity)
+    .merge(user, { passwordResetToken: null, password: newPassword })
+  await getConnection()
+    .getRepository(UserEntity)
+    .save(user)
+
+  return user
 }
 
-export const index = () => 'ola'
+export const index = () =>
+  getConnection()
+    .getRepository(UserEntity)
+    .createQueryBuilder()
+    .getMany()
 
-export const show = ctx => '2'
+export const show = ctx =>
+  getConnection()
+    .getRepository(UserEntity)
+    .findOneOrFail(ctx.params.id)
 
 export const create = async ctx => {
-  // const { body } = ctx.request
+  const { body } = ctx.request
 
-  // return new User({
-  //   name: body.name,
-  //   email: body.email,
-  //   password: await encryptPassword(body.password),
-  //   role: body.role
-  // }).save()
-
-  return 'o'
+  return getConnection()
+    .getRepository(UserEntity)
+    .save({ ...body, password: await encryptPassword(body.password) })
 }
 
 export const update = async ctx => {
   const { body } = ctx.request
 
-  // return new User({ id: ctx.params.id }).save(
-  //   {
-  //     name: body.name,
-  //     email: body.email,
-  //     password: await encryptPassword(body.password),
-  //     role: body.role
-  //   },
-  //   { method: 'update' }
-  // )
+  const user = await getConnection()
+    .getRepository(UserEntity)
+    .findOneOrFail({ id: ctx.params.id })
 
-  return '4'
+  await getConnection()
+    .getRepository(UserEntity)
+    .merge(user, body)
+  await getConnection()
+    .getRepository(UserEntity)
+    .save(user)
+
+  return user
 }
 
-export const destroy = ctx => 'ola'
+export const destroy = ctx => {
+  getConnection()
+    .getRepository(UserEntity)
+    .softDelete(ctx.params.id)
+  const isAffected = isDeleted.raw.affectedRows > 0
+
+  return isAffected
+}
 
 export default {
   login,

@@ -3,19 +3,19 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { RoleEntity } from './Role'
+import { Role } from './Role'
 
 @Entity({ name: 'users', orderBy: { createdAt: 'DESC' } })
-export class UserEntity {
+export class User {
   @PrimaryGeneratedColumn('uuid')
   id = ''
 
-  @OneToOne(() => RoleEntity)
+  @ManyToOne(() => Role)
   @JoinColumn({ name: 'role_id', referencedColumnName: 'id' })
   role = undefined
 
