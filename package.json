@@ -11,7 +11,7 @@
     "node": ">=10.14.0"
   },
   "scripts": {
-    "dev": "babel src --out-dir dist && nodemon dist/index.js",
+    "dev": "nodemon src/index.js --exec babel-node --inspect src/index.js",
     "s": "babel src --out-dir dist && node dist/index.js",
     "start": "babel-node build/index.js",
     "build": "rm -rf build && mkdir build && babel src -s -d build",
