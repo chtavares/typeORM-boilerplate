@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneTo } from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
 import { User } from './User'
 
 @Entity({ name: 'roles', orderBy: { createdAt: 'DESC' } })
