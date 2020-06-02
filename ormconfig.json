@@ -1,10 +1,10 @@
 {
   "name": "default",
   "type": "postgres",
-  "host": "localhost",
+  "host": "database",
   "port": 5432,
   "username": "postgres",
-  "password": "",
+  "password": "password",
   "database": "boilerplate_db",
   "synchronize": true,
   "entities": ["src/entity/*.js"],
