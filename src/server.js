@@ -6,7 +6,7 @@ import jwt from 'koa-jwt'
 
 import routes from 'routes'
 import getToken from 'middlewares/jwt-middleware'
-import { errorHandling } from 'helpers'
+import { errorHandling, NotFound } from 'helpers'
 import { JWT_SECRET, DATABASE_URL } from 'config'
 import helmet from 'koa-helmet'
 
@@ -44,6 +44,16 @@ app.use(
     path: ['/v1/users/login', '/v1/users/signup', '/public']
   })
 )
+
+app.use((ctx, next) => {
+  const hasRoute = routes.stack
+    .map(route => route.path)
+    .includes(ctx.request.url)
+
+  if (!hasRoute) throw NotFound()
+
+  return next()
+})
 
 app.use(routes.routes())
 app.use(routes.allowedMethods())
