@@ -1,0 +1,23 @@
+version: '3'
+services:
+  app:
+    build: .
+    environment:
+      NODE_ENV: development
+    command: node_modules/.bin/nodemon --exec npm run dev
+    ports:
+      - '7000:3000'
+    tty: true
+    depends_on:
+      - database
+    volumes:
+      - .:/home/app/api
+      - /home/app/api/node_modules
+  database:
+    image: postgres:11
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: database
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./docker-volumes/db:/var/lib/postgresql/data
