@@ -13,7 +13,6 @@
   "scripts": {
     "seed": "babel-node seeds/index.js",
     "dev": "nodemon src/index.js --exec babel-node --inspect src/index.js",
-    "s": "babel src --out-dir dist && node dist/index.js",
     "start": "babel-node build/index.js",
     "build": "rm -rf build && mkdir build && babel src -s -d build",
     "pm2": "pm2 start build/index.js -i ${PM2_WORKERS-2} --max-memory-restart ${PM2_MAX_MEM-256M} --env production",
@@ -35,11 +34,12 @@
   "author": "naveteam",
   "license": "ISC",
   "dependencies": {
+    "@babel/node": "^7.10.1",
+    "@babel/polyfill": "^7.10.1",
     "@hapi/joi": "^16.1.4",
     "@koa/cors": "^2.2.2",
     "aws-sdk": "^2.491.0",
     "babel-eslint": "^10.0.2",
-    "babel-node": "^",
     "babel-plugin-module-resolver": "^3.2.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^6.1.0",

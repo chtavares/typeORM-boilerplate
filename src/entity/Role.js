@@ -1,12 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  UpdateDateColumn
-} from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
 import { User } from './User'
 
 @Entity({ name: 'roles', orderBy: { createdAt: 'DESC' } })
@@ -17,6 +9,6 @@ export class Role {
   @Column({ type: 'text', nullable: false })
   name = ''
 
-  @OneToOne(() => User)
+  @OneToMany(() => User)
   user = undefined
 }
